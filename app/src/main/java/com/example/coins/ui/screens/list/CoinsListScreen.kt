@@ -18,14 +18,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -37,7 +41,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.coins.R
 import com.example.coins.data.model.Coin
+import com.example.coins.ui.screens.CoinsTopAppBar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinsListScreen(
     viewModel: CoinsListViewModel = viewModel(factory = CoinsListViewModel.Factory),
@@ -45,16 +51,26 @@ fun CoinsListScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState = viewModel.uiState.collectAsState().value
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    when (uiState) {
-        is CoinsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-        is CoinsUiState.Success -> CoinsColumnScreen(
-            uiState.coins,
-            onItemClick = onItemClick,
-            modifier = modifier.fillMaxSize()
-        )
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { CoinsTopAppBar(scrollBehavior = scrollBehavior) },
+    ) { paddingValues ->
 
-        is CoinsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
+
+        when (uiState) {
+            is CoinsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+            is CoinsUiState.Success -> CoinsColumnScreen(
+                uiState.coins,
+                onItemClick = onItemClick,
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            )
+
+            is CoinsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
+        }
     }
 }
 
