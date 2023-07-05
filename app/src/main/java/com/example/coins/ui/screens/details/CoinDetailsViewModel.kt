@@ -1,0 +1,59 @@
+package com.example.coins.ui.screens.details//package com.example.coins.ui.theme.screens
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.coins.CoinsApplication
+import com.example.coins.data.CoinsRepository
+import com.example.coins.data.model.Coin
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+sealed interface CoinDetailsUiState {
+    data class Success(val coin: Coin) : CoinDetailsUiState
+
+    object Error : CoinDetailsUiState
+    object Loading : CoinDetailsUiState
+}
+
+class CoinDetailsViewModel(
+    private val coinId: String?,
+    private val coinsRepository: CoinsRepository,
+) : ViewModel() {
+    val uiState = MutableStateFlow<CoinDetailsUiState>(CoinDetailsUiState.Loading)
+
+    init {
+        getCoinDetails()
+    }
+
+    fun getCoinDetails() {
+        viewModelScope.launch {
+            uiState.update { CoinDetailsUiState.Loading }
+            val newState = try {
+                CoinDetailsUiState.Success(
+                    coinsRepository.getCoin(coinId!!)
+                )
+            } catch (e: Throwable) {
+                CoinDetailsUiState.Error
+            }
+            uiState.update { newState }
+        }
+    }
+
+    companion object {
+        fun factory(coinId: String?): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application =
+                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as CoinsApplication)
+                val coinsRepository = application.container.coinsRepository
+                CoinDetailsViewModel(
+                    coinId = coinId,
+                    coinsRepository = coinsRepository
+                )
+            }
+        }
+    }
+}

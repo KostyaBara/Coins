@@ -1,10 +1,10 @@
-package com.example.coins.model
+package com.example.coins.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Coin(
+data class CoinNet(
     val id: String,
     val name: String,
     val image: String,

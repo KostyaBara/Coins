@@ -1,0 +1,193 @@
+package com.example.coins.ui.screens.list
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.coins.R
+import com.example.coins.data.model.Coin
+
+@Composable
+fun CoinsListScreen(
+    viewModel: CoinsListViewModel = viewModel(factory = CoinsListViewModel.Factory),
+    onItemClick: (Coin) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val uiState = viewModel.uiState.collectAsState().value
+
+    when (uiState) {
+        is CoinsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+        is CoinsUiState.Success -> CoinsColumnScreen(
+            uiState.coins,
+            onItemClick = onItemClick,
+            modifier = modifier.fillMaxSize()
+        )
+
+        is CoinsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
+    }
+}
+
+@Composable
+fun LoadingScreen(modifier: Modifier = Modifier) {
+    Image(
+        modifier = modifier.size(200.dp),
+        painter = painterResource(R.drawable.loading_img),
+        contentDescription = stringResource(R.string.loading)
+    )
+}
+
+@Composable
+fun ResultScreen(
+    coins: String,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+    ) {
+        Text(text = coins)
+    }
+}
+
+@Composable
+fun CoinsColumnScreen(
+    coins: List<Coin>,
+    onItemClick: (Coin) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        items(
+            coins,
+            key = { coin -> coin.id }
+        ) { coin ->
+            CoinCard(
+                coin = coin,
+                onClick = { onItemClick(coin) }
+            )
+        }
+    }
+}
+
+@Composable
+fun ErrorScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_connection_error),
+            contentDescription = ""
+        )
+        Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
+    }
+}
+
+@Composable
+fun CoinCard(
+    coin: Coin,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(context = LocalContext.current)
+                .data(coin.image)
+                .crossfade(true)
+                .build(),
+            error = painterResource(R.drawable.ic_broken_image),
+            placeholder = painterResource(R.drawable.loading_img),
+            contentDescription = stringResource(R.string.app_name),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(48.dp, 48.dp)
+
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+
+            ) {
+            Text(
+                text = coin.name,
+                fontSize = 18.sp
+
+            )
+            Text(
+                text = coin.currentPrice.toString(),
+                fontSize = 14.sp
+            )
+        }
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+
+            ) {
+            Text(
+                text = coin.priceChange.toString(),
+                fontSize = 18.sp
+            )
+            Text(
+                text = coin.priceChangePercentage.toString(),
+                fontSize = 12.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        IconButton(
+            onClick = {},
+            modifier = Modifier.size(40.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.PlayArrow,
+                contentDescription = null,
+                tint = Color.Gray
+            )
+        }
+    }
+
+}
