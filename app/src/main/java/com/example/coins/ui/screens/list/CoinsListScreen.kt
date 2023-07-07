@@ -47,15 +47,15 @@ import com.example.coins.utils.priceChangePercentageFormat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinsListScreen(
-    viewModel: CoinsListViewModel = viewModel(factory = CoinsListViewModel.Factory),
     onItemClick: (Coin) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: CoinsListViewModel = viewModel(factory = CoinsListViewModel.Factory),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { CoinsTopAppBar(scrollBehavior = scrollBehavior) },
     ) { paddingValues ->
 

@@ -11,7 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.coins.ui.screens.NavDestinations.*
 import com.example.coins.ui.screens.details.CoinDetailsScreen
-import com.example.coins.ui.screens.list.CoinsListScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +26,7 @@ fun RootScreen(
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = Home.screenName) {
-                CoinsListScreen(
+                HomeScreen(
                     onItemClick = {
                         navController.navigate(CoinDetails.withId(it.id))
                     },
