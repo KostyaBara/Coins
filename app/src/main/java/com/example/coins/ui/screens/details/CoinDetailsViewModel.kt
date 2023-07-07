@@ -13,8 +13,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 sealed interface CoinDetailsUiState {
-    data class Success(val coin: Coin) : CoinDetailsUiState
-
+    data class Success(
+        val coin: Coin = Coin(),
+        val chart: List<Float> = listOf(
+            4.33F, 500F, 5.32F, 15.1F, 82.6F, 12F, 55F, 100F, 60F, 26F, 13F, 34F, 55F, 139F, 35F, 79F
+        ),
+        ) : CoinDetailsUiState
     object Error : CoinDetailsUiState
     object Loading : CoinDetailsUiState
 }

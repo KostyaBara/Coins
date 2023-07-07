@@ -1,12 +1,14 @@
 package com.example.coins.data
 
-import CoinsApiService
 import com.example.coins.data.model.Coin
+import com.example.coins.data.model.CoinChart
 import com.example.coins.data.model.toModel
+import com.example.coins.network.CoinsApiService
 
 interface CoinsRepository {
     suspend fun getCoin(id: String): Coin
     suspend fun getCoins(): List<Coin>
+    suspend fun getCoinChart(id: String): CoinChart
 }
 
 class NetworkCoinsRepository(
@@ -22,4 +24,7 @@ class NetworkCoinsRepository(
         coins = coinsApiService.getCoinList().map { it.toModel() }
         return coins
     }
+
+    override suspend fun getCoinChart(id: String): CoinChart =
+        coinsApiService.getCoinChart(id).toModel()
 }

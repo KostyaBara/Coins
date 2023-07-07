@@ -5,19 +5,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +44,15 @@ import coil.request.ImageRequest
 import com.example.coins.R
 import com.example.coins.data.model.Coin
 import com.example.coins.ui.screens.CoinsTopAppBar
+import com.example.coins.utils.currentPriceFormat
+import com.example.coins.utils.priceChangeFormat
+import com.example.coins.utils.priceChangePercentageFormat
+
+enum class Pictures(val picture: ImageVector) {
+    REDARROW(Icons.Filled.Create),
+    GREENARROW(Icons.Filled.Face),
+    DASH(Icons.Filled.Star)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +118,6 @@ fun CoinsColumnScreen(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(8.dp)
     ) {
         items(
             coins,
@@ -158,45 +168,21 @@ fun CoinCard(
             placeholder = painterResource(R.drawable.loading_img),
             contentDescription = stringResource(R.string.app_name),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(48.dp, 48.dp)
+            modifier = Modifier.size(48.dp)
 
         )
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
+        NamePriceCard(coin)
 
-            ) {
-            Text(
-                text = coin.name,
-                fontSize = 18.sp
+        Spacer(modifier = Modifier.weight(1f))
 
-            )
-            Text(
-                text = coin.currentPrice.toString(),
-                fontSize = 14.sp
-            )
-        }
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
-
-            ) {
-            Text(
-                text = coin.priceChange.toString(),
-                fontSize = 18.sp
-            )
-            Text(
-                text = coin.priceChangePercentage.toString(),
-                fontSize = 12.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
+        PriceChangeCard(coin)
 
         IconButton(
-            onClick = {},
-            modifier = Modifier.size(40.dp)
+            onClick = { onClick() },
+            modifier = Modifier.size(32.dp)
         ) {
             Icon(
                 imageVector = Icons.Filled.PlayArrow,
@@ -205,5 +191,63 @@ fun CoinCard(
             )
         }
     }
+}
+
+@Composable
+fun NamePriceCard(coin: Coin) {
+    Column(
+        verticalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        Text(
+            text = coin.name,
+            fontSize = 20.sp
+        )
+        Text(
+            text = coin.currentPrice.currentPriceFormat(),
+            fontSize = 16.sp
+        )
+    }
+}
+
+@Composable
+fun PriceChangeCard(coin: Coin) {
+
+    val picture = if (coin.priceChangePercentage < 0) {
+        Pictures.REDARROW
+    } else if (coin.priceChangePercentage > 0) {
+        Pictures.GREENARROW
+    } else Pictures.DASH
+
+    Column(
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        Text(
+            text = coin.priceChange.priceChangeFormat(),
+            fontSize = 18.sp
+        )
+        Row() {
+            Image(
+                painter = if (coin.priceChangePercentage < 0) {
+                    painterResource(R.drawable.red_arrow_down)
+                } else if (coin.priceChangePercentage > 0) {
+                    painterResource(R.drawable.green_arrow_up)
+                } else painterResource(R.drawable.dash),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            Text(
+                text = coin.priceChangePercentage.priceChangePercentageFormat(),
+                fontSize = 15.sp
+            )
+        }
+    }
+}
+
+@Composable
+private fun CoinCardPreview() {
 
 }

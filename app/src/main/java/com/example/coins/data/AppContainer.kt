@@ -1,6 +1,6 @@
 package com.example.coins.data
 
-import CoinsApiService
+import com.example.coins.network.CoinsApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
