@@ -15,10 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +27,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -43,16 +39,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.coins.R
 import com.example.coins.data.model.Coin
-import com.example.coins.ui.screens.CoinsTopAppBar
+import com.example.coins.ui.helpers.CoinsTopAppBar
 import com.example.coins.utils.currentPriceFormat
 import com.example.coins.utils.priceChangeFormat
 import com.example.coins.utils.priceChangePercentageFormat
-
-enum class Pictures(val picture: ImageVector) {
-    REDARROW(Icons.Filled.Create),
-    GREENARROW(Icons.Filled.Face),
-    DASH(Icons.Filled.Star)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -211,13 +201,6 @@ fun NamePriceCard(coin: Coin) {
 
 @Composable
 fun PriceChangeCard(coin: Coin) {
-
-    val picture = if (coin.priceChangePercentage < 0) {
-        Pictures.REDARROW
-    } else if (coin.priceChangePercentage > 0) {
-        Pictures.GREENARROW
-    } else Pictures.DASH
-
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.SpaceEvenly,

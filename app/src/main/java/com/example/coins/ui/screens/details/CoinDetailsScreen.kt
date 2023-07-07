@@ -51,7 +51,6 @@ fun CoinDetailsScreen(
     viewModel: CoinDetailsViewModel = viewModel(factory = CoinDetailsViewModel.factory(coinId)),
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
 

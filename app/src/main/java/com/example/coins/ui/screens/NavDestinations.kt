@@ -5,9 +5,9 @@ import androidx.navigation.NavBackStackEntry
 sealed interface NavDestinations {
     val screenName: String
 
-    object CoinsList : NavDestinations {
+    object Home : NavDestinations {
         override val screenName: String
-            get() = "list"
+            get() = "home"
     }
 
     object CoinDetails : NavDestinations {
