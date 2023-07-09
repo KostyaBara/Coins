@@ -59,10 +59,9 @@ fun CoinsListScreen(
         topBar = { CoinsTopAppBar(scrollBehavior = scrollBehavior) },
     ) { paddingValues ->
 
-
         when (uiState) {
             is CoinsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-            is CoinsUiState.Success -> CoinsColumnScreen(
+            is CoinsUiState.Success -> CoinsSuccessScreen(
                 uiState.coins,
                 onItemClick = onItemClick,
                 modifier = modifier
@@ -98,7 +97,7 @@ fun ResultScreen(
 }
 
 @Composable
-fun CoinsColumnScreen(
+fun CoinsSuccessScreen(
     coins: List<Coin>,
     onItemClick: (Coin) -> Unit,
     modifier: Modifier = Modifier,

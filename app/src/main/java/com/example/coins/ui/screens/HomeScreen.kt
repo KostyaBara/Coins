@@ -31,6 +31,8 @@ fun HomeScreen(
 
     val tabs = listOf("List", "Favorites")
 
+    
+
     Column(modifier = Modifier.fillMaxSize()) {
         when (tabIndex.value) {
             0 -> CoinsListScreen(

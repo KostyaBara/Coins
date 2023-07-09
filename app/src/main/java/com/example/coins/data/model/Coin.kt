@@ -9,6 +9,7 @@ data class Coin(
     val currentPrice: Double = 0.0,
     val priceChange: Double = 0.0,
     val priceChangePercentage: Double = 0.0,
+    var isFavored: Boolean = false
 )
 
 fun CoinNet.toModel() =

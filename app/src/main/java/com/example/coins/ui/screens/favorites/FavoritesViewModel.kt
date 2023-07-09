@@ -27,12 +27,12 @@ class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewMod
         getCoins()
     }
 
-    fun getCoins() {
+    private fun getCoins() {
         viewModelScope.launch {
             uiState.update { FavoritesUiState.Loading }
             val newState = try {
                 FavoritesUiState.Success(
-                    coinsRepository.getCoins()
+                    coinsRepository.getListOfFavored()
                 )
             } catch (e: Throwable) {
                 FavoritesUiState.Error
@@ -41,13 +41,13 @@ class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewMod
         }
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as CoinsApplication)
-                val coinsRepository = application.container.coinsRepository
-                FavoritesViewModel(coinsRepository = coinsRepository)
-            }
+companion object {
+    val Factory: ViewModelProvider.Factory = viewModelFactory {
+        initializer {
+            val application = (this[APPLICATION_KEY] as CoinsApplication)
+            val coinsRepository = application.container.coinsRepository
+            FavoritesViewModel(coinsRepository = coinsRepository)
         }
     }
+}
 }

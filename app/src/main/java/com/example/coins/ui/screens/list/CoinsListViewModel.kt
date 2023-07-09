@@ -40,13 +40,15 @@ class CoinsListViewModel(private val coinsRepository: CoinsRepository) : ViewMod
         }
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[APPLICATION_KEY] as CoinsApplication)
-                val coinsRepository = application.container.coinsRepository
-                CoinsListViewModel(coinsRepository = coinsRepository)
-            }
+companion object {
+    val Factory: ViewModelProvider.Factory = viewModelFactory {
+        initializer {
+            val application = (this[APPLICATION_KEY] as CoinsApplication)
+            val coinsRepository = application.container.coinsRepository
+            CoinsListViewModel(coinsRepository = coinsRepository)
         }
     }
 }
+}
+
+
