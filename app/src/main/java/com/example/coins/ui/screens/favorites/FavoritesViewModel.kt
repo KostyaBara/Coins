@@ -32,7 +32,7 @@ class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewMod
             uiState.update { FavoritesUiState.Loading }
             val newState = try {
                 FavoritesUiState.Success(
-                    coinsRepository.getListOfFavored()
+                coinsRepository.getCoins()
                 )
             } catch (e: Throwable) {
                 FavoritesUiState.Error

@@ -9,7 +9,6 @@ interface CoinsRepository {
     suspend fun getCoin(id: String): Coin
     suspend fun getCoins(): List<Coin>
     suspend fun getCoinChart(id: String): CoinChart
-    suspend fun getListOfFavored(): List<Coin>
 }
 
 class NetworkCoinsRepository(
@@ -28,14 +27,4 @@ class NetworkCoinsRepository(
 
     override suspend fun getCoinChart(id: String): CoinChart =
         coinsApiService.getCoinChart(id).toModel()
-
-    override suspend fun getListOfFavored(): List<Coin> {
-        var listOfFavored = mutableListOf<Coin>()
-        for (item in coins) {
-            if (item.isFavored == true) {
-                listOfFavored.add(item)
-            }
-        }
-        return listOfFavored
-    }
 }

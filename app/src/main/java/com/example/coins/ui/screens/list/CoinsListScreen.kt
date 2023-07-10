@@ -121,7 +121,7 @@ fun CoinsSuccessScreen(
 }
 
 @Composable
-fun ErrorScreen(modifier: Modifier = Modifier) {
+private fun ErrorScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,

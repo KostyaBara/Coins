@@ -34,7 +34,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.coins.R
 import com.example.coins.data.model.Coin
-import com.example.coins.ui.screens.list.ErrorScreen
 import com.example.coins.ui.screens.list.LoadingScreen
 import com.example.coins.ui.theme.CoinsTheme
 import com.example.coins.utils.currentPriceFormat
@@ -95,6 +94,21 @@ private fun NavBar(
             modifier = Modifier
                 .padding(start = 80.dp)
         )
+    }
+}
+
+@Composable
+private fun ErrorScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_connection_error),
+            contentDescription = ""
+        )
+        Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
     }
 }
 

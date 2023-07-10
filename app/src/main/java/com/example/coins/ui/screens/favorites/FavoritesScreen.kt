@@ -49,13 +49,15 @@ fun FavoritesScreen(
 
         when (uiState) {
             is FavoritesUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-            is FavoritesUiState.Success -> SuccessFavoritesScreen(
-                uiState.coins,
-                onItemClick = onItemClick,
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            )
+            is FavoritesUiState.Success -> {
+                SuccessFavoritesScreen(
+                    uiState.coins,
+                    onItemClick = onItemClick,
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
+            }
 
             is FavoritesUiState.Error -> ErrorFavoritesScreen(modifier = modifier.fillMaxSize())
             is FavoritesUiState.Empty -> EmptyScreen(modifier = Modifier)
@@ -63,29 +65,42 @@ fun FavoritesScreen(
     }
 }
 
-    @Composable
-    private fun SuccessFavoritesScreen(
-        coins: List<Coin>,
-        onItemClick: (Coin) -> Unit,
-        modifier: Modifier = Modifier,
-    ) {
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            items(
-                coins,
-                key = { coin -> coin.id }
-            ) { coin ->
-                CoinCard(
-                    coin = coin,
-                    onClick = { onItemClick(coin) }
-                )
-            }
+@Composable
+private fun SuccessFavoritesScreen(
+    coins: List<Coin>,
+    onItemClick: (Coin) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (coins.isNotEmpty()) {
+        coins[0].isFavored = true
+        coins[1].isFavored = true
+        coins[25].isFavored = true
+    }
+
+    val listOfFavored = mutableListOf<Coin>()
+    for (item in coins) {
+        if (item.isFavored) {
+            listOfFavored.add(item)
         }
     }
+
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        items(
+            listOfFavored,
+            key = { coin -> coin.id }
+        ) { coin ->
+            CoinCard(
+                coin = coin,
+                onClick = { onItemClick(coin) }
+            )
+        }
+    }
+}
 
 @Composable
 private fun ErrorFavoritesScreen(modifier: Modifier = Modifier) {
