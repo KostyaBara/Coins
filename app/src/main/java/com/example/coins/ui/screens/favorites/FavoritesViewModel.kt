@@ -10,8 +10,10 @@ import com.example.coins.CoinsApplication
 import com.example.coins.data.CoinsRepository
 import com.example.coins.data.model.Coin
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 sealed interface FavoritesUiState {
     data class Success(val coins: List<Coin>) : FavoritesUiState
@@ -24,21 +26,18 @@ class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewMod
     val uiState = MutableStateFlow<FavoritesUiState>(FavoritesUiState.Loading)
 
     init {
-        getCoins()
+        observeCoins()
     }
 
-    private fun getCoins() {
-        viewModelScope.launch {
-            uiState.update { FavoritesUiState.Loading }
-            val newState = try {
-                FavoritesUiState.Success(
-                coinsRepository.getCoins()
-                )
-            } catch (e: Throwable) {
-                FavoritesUiState.Error
-            }
-            uiState.update { newState }
-        }
+    private fun observeCoins() {
+        uiState.update { FavoritesUiState.Loading }
+
+        coinsRepository
+            .observeFavorite()
+            .onEach { coins -> uiState.update { FavoritesUiState.Success(coins) } }
+            .catch { uiState.update { FavoritesUiState.Error } }
+            .launchIn(viewModelScope)
+
     }
 
 companion object {

@@ -71,19 +71,6 @@ private fun SuccessFavoritesScreen(
     onItemClick: (Coin) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (coins.isNotEmpty()) {
-        coins[0].isFavored = true
-        coins[1].isFavored = true
-        coins[25].isFavored = true
-    }
-
-    val listOfFavored = mutableListOf<Coin>()
-    for (item in coins) {
-        if (item.isFavored) {
-            listOfFavored.add(item)
-        }
-    }
-
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
@@ -91,7 +78,7 @@ private fun SuccessFavoritesScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(
-            listOfFavored,
+            coins,
             key = { coin -> coin.id }
         ) { coin ->
             CoinCard(

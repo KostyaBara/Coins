@@ -1,5 +1,6 @@
 package com.example.coins.ui
 
 data class SettingsData (
-    val isFavored: Boolean
+    val favoredCoinId: String,
+    val listO: MutableList<String>
 )

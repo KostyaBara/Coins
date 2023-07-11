@@ -1,6 +1,7 @@
 package com.example.coins.data
 
-import com.example.coins.network.CoinsApiService
+import android.content.Context
+import com.example.coins.network.CoinsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -10,7 +11,9 @@ interface AppContainer {
     val coinsRepository: CoinsRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(
+    private val appContext: Context,
+) : AppContainer {
 
     private val baseUrl =
         "https://api.coingecko.com/api/v3/"
@@ -22,11 +25,16 @@ class DefaultAppContainer : AppContainer {
         .baseUrl(baseUrl)
         .build()
 
-    private val retrofitService: CoinsApiService by lazy {
-        retrofit.create(CoinsApiService::class.java)
+    private val coinsApi: CoinsApi by lazy {
+        retrofit.create(CoinsApi::class.java)
     }
 
+    private val db by lazy { MainDb.createDataBase(appContext) }
+
     override val coinsRepository: CoinsRepository by lazy {
-        NetworkCoinsRepository(retrofitService)
+        CoinsRepositoryImpl(
+            dao = db.coinDao,
+            api = coinsApi
+        )
     }
 }

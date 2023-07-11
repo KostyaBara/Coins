@@ -27,11 +27,10 @@ import com.example.coins.ui.screens.list.CoinsListScreen
 fun HomeScreen(
     onItemClick: (Coin) -> Unit,
 ) {
-    val tabIndex = remember { mutableStateOf(0) }
+    var tabIndex = remember { mutableStateOf(0) }
 
     val tabs = listOf("List", "Favorites")
 
-    
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (tabIndex.value) {
@@ -41,12 +40,15 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .weight(1f)
             )
-            1 -> FavoritesScreen(
-                onItemClick = onItemClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
+            1 -> {
+//                var tabSecondIndex = remember { mutableStateOf(1) }
+                FavoritesScreen(
+                    onItemClick = onItemClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
         }
         Divider()
         TabRow(

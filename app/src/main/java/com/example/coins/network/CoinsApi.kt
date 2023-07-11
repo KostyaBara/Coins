@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface CoinsApiService {
+interface CoinsApi {
     @GET("coins/markets")
     suspend fun getCoinList(
         @Query("vs_currency") currency: String = "usd",

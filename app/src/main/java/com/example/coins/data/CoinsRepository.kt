@@ -2,29 +2,69 @@ package com.example.coins.data
 
 import com.example.coins.data.model.Coin
 import com.example.coins.data.model.CoinChart
+import com.example.coins.data.model.toEntity
 import com.example.coins.data.model.toModel
-import com.example.coins.network.CoinsApiService
+import com.example.coins.network.CoinsApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-interface CoinsRepository {
-    suspend fun getCoin(id: String): Coin
-    suspend fun getCoins(): List<Coin>
-    suspend fun getCoinChart(id: String): CoinChart
+enum class LoadingMode {
+    NET,
+    CACHE,
+    CACHE_NET
 }
 
-class NetworkCoinsRepository(
-    private val coinsApiService: CoinsApiService,
+interface CoinsRepository {
+    suspend fun getCoin(id: String): Coin?
+    suspend fun getCoins(loadingMode: LoadingMode = LoadingMode.NET): List<Coin>
+    suspend fun getCoinChart(id: String): CoinChart
+
+    fun observeCoin(id:String): Flow<Coin>
+    fun observeAllCoins(): Flow<List<Coin>>
+    fun observeFavorite(): Flow<List<Coin>>
+
+    suspend fun setFavorite(id: String, isFavorite: Boolean)
+}
+
+class CoinsRepositoryImpl(
+    private val dao: CoinDao,
+    private val api: CoinsApi,
 ) : CoinsRepository {
 
-    var coins = listOf<Coin>()
-
     override suspend fun getCoin(id: String) =
-        coins.first { it.id == id }
+        dao.getCoin(id)?.toModel()
 
-    override suspend fun getCoins(): List<Coin> {
-        coins = coinsApiService.getCoinList().map { it.toModel() }
+    override suspend fun getCoins(loadingMode: LoadingMode): List<Coin> =
+        when (loadingMode) {
+            LoadingMode.NET -> getFromNet()
+            LoadingMode.CACHE -> dao.getAll().map { it.toModel() }
+            LoadingMode.CACHE_NET -> dao.getAll().map { it.toModel() }.ifEmpty { getFromNet() }
+        }
+
+    private suspend fun getFromNet(): List<Coin> {
+        val coins = api.getCoinList().map {
+            val isFavorite = dao.isFavorite(it.id)
+            it.toModel(isFavorite ?: false)
+        }
+
+        dao.insert(coins.map { it.toEntity() })
+
         return coins
     }
 
+    override fun observeCoin(id: String): Flow<Coin> =
+        dao.observeCoin(id).map { it.toModel() }
+
+    override fun observeAllCoins(): Flow<List<Coin>> =
+        dao.observeAll().map { list -> list.map { it.toModel() } }
+
+    override fun observeFavorite(): Flow<List<Coin>> =
+        dao.observeFavorite().map { list -> list.map { it.toModel() } }
+
     override suspend fun getCoinChart(id: String): CoinChart =
-        coinsApiService.getCoinChart(id).toModel()
+        api.getCoinChart(id).toModel()
+
+    override suspend fun setFavorite(id: String, isFavorite: Boolean) {
+        dao.updateFavorite(id, isFavorite)
+    }
 }

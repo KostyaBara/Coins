@@ -9,6 +9,8 @@ import com.example.coins.CoinsApplication
 import com.example.coins.data.CoinsRepository
 import com.example.coins.data.model.Coin
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -31,14 +33,20 @@ class CoinDetailsViewModel(
 
     init {
         getCoinDetails()
+        observeCoin()
     }
 
-    fun getCoinDetails() {
+    fun setFavorite(isFavorite: Boolean) =
+        viewModelScope.launch {
+            coinsRepository.setFavorite(coinId!!, isFavorite)
+        }
+
+    private fun getCoinDetails() {
         viewModelScope.launch {
             uiState.update { CoinDetailsUiState.Loading }
             val newState = try {
                 CoinDetailsUiState.Success(
-                    coinsRepository.getCoin(coinId!!)
+                    coinsRepository.getCoin(coinId!!)!!
                 )
             } catch (e: Throwable) {
                 CoinDetailsUiState.Error
@@ -46,6 +54,13 @@ class CoinDetailsViewModel(
             uiState.update { newState }
         }
     }
+
+    private fun observeCoin() =
+        coinsRepository.observeCoin(coinId!!)
+            .onEach { coin->
+                uiState.update { CoinDetailsUiState.Success(coin)  }
+            }
+            .launchIn(viewModelScope)
 
     companion object {
         fun factory(coinId: String?): ViewModelProvider.Factory = viewModelFactory {

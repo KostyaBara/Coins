@@ -17,6 +17,8 @@ import com.example.coins.ui.screens.details.CoinDetailsScreen
 fun RootScreen(
     navController: NavHostController = rememberNavController(),
 ) {
+
+
     Scaffold(
     ) { innerPadding ->
 
@@ -35,7 +37,7 @@ fun RootScreen(
             composable(route = CoinDetails.screenName) { backStackEntry ->
                 CoinDetailsScreen(
                     coinId = CoinDetails.getCoinId(backStackEntry),
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
                 )
             }
         }

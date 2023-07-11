@@ -3,13 +3,24 @@ package com.example.coins.ui.screens.details
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,7 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,13 +45,11 @@ import coil.request.ImageRequest
 import com.example.coins.R
 import com.example.coins.data.model.Coin
 import com.example.coins.ui.screens.list.LoadingScreen
-import com.example.coins.ui.theme.CoinsTheme
 import com.example.coins.utils.currentPriceFormat
 import com.example.coins.utils.priceChangeFormat
 import com.example.coins.utils.priceChangePercentageFormat
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinDetailsScreen(
     coinId: String?,
@@ -56,6 +64,9 @@ fun CoinDetailsScreen(
         is CoinDetailsUiState.Success -> SuccessScreen(
             uiState = uiState,
             onBackClick = onBackClick,
+            onFavorite = { isFavorite ->
+                viewModel.setFavorite(isFavorite)
+            }
         )
 
         is CoinDetailsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
@@ -64,12 +75,13 @@ fun CoinDetailsScreen(
 
 @Composable
 private fun NavBar(
+    uiState: CoinDetailsUiState.Success,
     onClick: () -> Unit,
-    coinName: String?,
+    onFavorite: (Boolean) -> Unit,
 ) {
 
     Row(
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -77,23 +89,33 @@ private fun NavBar(
         Icon(
             imageVector = Icons.Filled.ArrowBack,
             contentDescription = null,
-            tint = Color.Black,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .clickable { onClick() }
                 .align(alignment = Alignment.CenterVertically)
-                .padding(12.dp)
         )
 
         Spacer(modifier = Modifier.height(52.dp))
 
         Text(
-            text = ("$coinName".capitalize()),
-            textAlign = TextAlign.Start,
+            text = "${uiState.coin.name}",
+            textAlign = TextAlign.Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(start = 80.dp)
         )
+
+        IconButton(
+            onClick = { onFavorite(!uiState.coin.isFavorite) },
+            modifier = Modifier
+                .size(32.dp)
+        ) {
+            val icon = if (uiState.coin.isFavorite) Icons.Filled.Favorite else Icons.Outlined.Star
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = Color.Red
+            )
+        }
     }
 }
 
@@ -125,16 +147,20 @@ private fun LoadingScreen(modifier: Modifier = Modifier) {
 private fun SuccessScreen(
     uiState: CoinDetailsUiState.Success,
     onBackClick: () -> Unit = {},
+    onFavorite: (Boolean) -> Unit,
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
     ) {
+
         NavBar(
-            coinName = uiState.coin.name,
+            uiState = uiState,
             onClick = onBackClick,
+            onFavorite = onFavorite
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -286,23 +312,23 @@ private fun RowScope.Bar(
 }
 
 
-@Composable
-@Preview
-private fun SuccessScreenPreview() {
-    CoinsTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            SuccessScreen(
-                uiState = CoinDetailsUiState.Success(
-                    coin = Coin(
-                        name = "Bitcoin",
-                        image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-                        currentPrice = 31999.0,
-                    ),
-                ),
-            )
-        }
-    }
-}
+//@Composable
+//@Preview
+//private fun SuccessScreenPreview() {
+//    CoinsTheme {
+//        Surface(
+//            modifier = Modifier.fillMaxSize(),
+//            color = MaterialTheme.colorScheme.background
+//        ) {
+//            SuccessScreen(
+//                uiState = CoinDetailsUiState.Success(
+//                    coin = Coin(
+//                        name = "Bitcoin",
+//                        image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+//                        currentPrice = 31999.0,
+//                    ),
+//                ),
+//            )
+//        }
+//    }
+//}
