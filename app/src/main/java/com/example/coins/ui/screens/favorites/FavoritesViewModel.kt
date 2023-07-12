@@ -24,6 +24,7 @@ sealed interface FavoritesUiState {
 
 class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewModel() {
     val uiState = MutableStateFlow<FavoritesUiState>(FavoritesUiState.Loading)
+    var isOnFavoriteScreen = false
 
     init {
         observeCoins()
@@ -40,13 +41,13 @@ class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewMod
 
     }
 
-companion object {
-    val Factory: ViewModelProvider.Factory = viewModelFactory {
-        initializer {
-            val application = (this[APPLICATION_KEY] as CoinsApplication)
-            val coinsRepository = application.container.coinsRepository
-            FavoritesViewModel(coinsRepository = coinsRepository)
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as CoinsApplication)
+                val coinsRepository = application.container.coinsRepository
+                FavoritesViewModel(coinsRepository = coinsRepository)
+            }
         }
     }
-}
 }

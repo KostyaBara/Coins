@@ -19,18 +19,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.coins.data.model.Coin
 import com.example.coins.ui.screens.favorites.FavoritesScreen
+import com.example.coins.ui.screens.favorites.FavoritesViewModel
 import com.example.coins.ui.screens.list.CoinsListScreen
 
 @Composable
 fun HomeScreen(
     onItemClick: (Coin) -> Unit,
+    viewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.Factory)
 ) {
     var tabIndex = remember { mutableStateOf(0) }
 
     val tabs = listOf("List", "Favorites")
 
+    if (viewModel.isOnFavoriteScreen) {
+        viewModel.isOnFavoriteScreen = false
+        tabIndex = remember { mutableStateOf(1) }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         when (tabIndex.value) {
@@ -40,15 +47,13 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .weight(1f)
             )
-            1 -> {
-//                var tabSecondIndex = remember { mutableStateOf(1) }
+            1 ->
                 FavoritesScreen(
                     onItemClick = onItemClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .weight(1f),
                 )
-            }
         }
         Divider()
         TabRow(

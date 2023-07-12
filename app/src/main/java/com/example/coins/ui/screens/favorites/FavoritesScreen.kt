@@ -37,10 +37,11 @@ fun FavoritesScreen(
     onItemClick: (Coin) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.Factory),
-//    coins: List<Coin>
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    viewModel.isOnFavoriteScreen = true
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
