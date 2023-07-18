@@ -3,7 +3,7 @@ package com.example.coins.data.model
 import com.example.coins.network.model.CoinChartNet
 
 data class CoinChart(
-    val prices: List<ChartItem>,
+    val prices: List<ChartItem> = emptyList(),
 )
 
 data class ChartItem(
@@ -13,5 +13,5 @@ data class ChartItem(
 
 fun CoinChartNet.toModel() =
     CoinChart(
-        prices = prices.map { ChartItem(it.timestamp, it.value) }
+        prices = prices.map { ChartItem(it[0].toLong(), it[1]) }
     )

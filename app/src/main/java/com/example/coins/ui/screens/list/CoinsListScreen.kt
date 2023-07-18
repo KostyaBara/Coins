@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,7 +45,7 @@ import com.example.coins.utils.currentPriceFormat
 import com.example.coins.utils.priceChangeFormat
 import com.example.coins.utils.priceChangePercentageFormat
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun CoinsListScreen(
     onItemClick: (Coin) -> Unit,
@@ -53,6 +54,21 @@ fun CoinsListScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+//    val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+//
+//    val pullRefreshState = rememberPullRefreshState(
+//        refreshing = refreshing,
+//        onRefresh = { viewModel.refresh() }
+//    )
+//    val coinData: List<Coin>? by viewModel.item.collectAsStateWithLifecycle()
+
+
+//    Box(
+//        Modifier
+//            .pullRefresh(pullRefreshState)
+//            .verticalScroll(rememberScrollState())
+//    ) {
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -69,10 +85,17 @@ fun CoinsListScreen(
                     .padding(paddingValues)
             )
 
-            is CoinsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
+                is CoinsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
+            }
         }
+
+//        PullRefreshIndicator(
+//            refreshing = refreshing,
+//            state = pullRefreshState,
+//            modifier = Modifier.align(Alignment.TopCenter)
+//        )
     }
-}
+
 
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier) {

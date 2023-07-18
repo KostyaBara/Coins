@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CoinChartNet(
-    val prices: List<ChartItemNet>,
+    val prices: List<List<Double>>,
 //    val market_caps: List<ChartItem>,
 //    val total_volumes: List<ChartItem>
 )

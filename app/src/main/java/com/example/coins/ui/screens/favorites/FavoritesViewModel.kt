@@ -26,9 +26,30 @@ class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewMod
     val uiState = MutableStateFlow<FavoritesUiState>(FavoritesUiState.Loading)
     var isOnFavoriteScreen = false
 
+    val isLoading = false
+
+//    private val _isRefreshing = MutableStateFlow(false)
+//    val isRefreshing: StateFlow<Boolean>
+//        get() = _isRefreshing.asStateFlow()
+
+//    private val _item = MutableStateFlow<FavoritesUiState>(FavoritesUiState.Loading)
+//    val item: StateFlow<FavoritesUiState>
+//        get() = _item.asStateFlow()
+
     init {
         observeCoins()
+//        refresh()
     }
+
+//    fun refresh() {
+//        viewModelScope.launch {
+//            val coinsList = mutableListOf<FavoritesUiState>()
+//            async(Dispatchers.IO) {
+//                _item.emit(coinsRepository.getCoins())
+//            }
+//            _isRefreshing.emit(false)
+//        }
+//    }
 
     private fun observeCoins() {
         uiState.update { FavoritesUiState.Loading }

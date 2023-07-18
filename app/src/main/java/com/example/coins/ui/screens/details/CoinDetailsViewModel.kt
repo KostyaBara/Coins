@@ -1,5 +1,6 @@
 package com.example.coins.ui.screens.details//package com.example.coins.ui.theme.screens
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.example.coins.CoinsApplication
 import com.example.coins.data.CoinsRepository
 import com.example.coins.data.model.Coin
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -17,10 +19,11 @@ import kotlinx.coroutines.launch
 sealed interface CoinDetailsUiState {
     data class Success(
         val coin: Coin = Coin(),
-        val chart: List<Float> = listOf(
-            4.33F, 500F, 5.32F, 15.1F, 82.6F, 12F, 55F, 100F, 60F, 26F, 13F, 34F, 55F, 139F, 35F, 79F
-        ),
-        ) : CoinDetailsUiState
+        val chart: List<Double> = listOf(
+            4.33, 500.0, 5.32, 15.1, 82.6, 12.0, 55.0, 100.0, 60.0, 26.0, 13.0, 34.0, 55.0, 139.0, 35.0, 79.0
+        )
+    ) : CoinDetailsUiState
+
     object Error : CoinDetailsUiState
     object Loading : CoinDetailsUiState
 }
@@ -30,6 +33,9 @@ class CoinDetailsViewModel(
     private val coinsRepository: CoinsRepository,
 ) : ViewModel() {
     val uiState = MutableStateFlow<CoinDetailsUiState>(CoinDetailsUiState.Loading)
+
+    private val chart
+        get() = (uiState.value as? CoinDetailsUiState.Success)?.chart
 
     init {
         getCoinDetails()
@@ -45,10 +51,16 @@ class CoinDetailsViewModel(
         viewModelScope.launch {
             uiState.update { CoinDetailsUiState.Loading }
             val newState = try {
+//                Log.d("abcd", "loading coin")
+                val coin = coinsRepository.getCoin(coinId!!)!!
+//                Log.d("abcd", "loading chart")
+                val chart = coinsRepository.getCoinChart(coinId).prices.map { it.value }
+//                Log.d("abcd", chart.toString())
                 CoinDetailsUiState.Success(
-                    coinsRepository.getCoin(coinId!!)!!
+                    coin, chart
                 )
             } catch (e: Throwable) {
+                Log.e("abcd", "error", e)
                 CoinDetailsUiState.Error
             }
             uiState.update { newState }
@@ -57,8 +69,9 @@ class CoinDetailsViewModel(
 
     private fun observeCoin() =
         coinsRepository.observeCoin(coinId!!)
-            .onEach { coin->
-                uiState.update { CoinDetailsUiState.Success(coin)  }
+            .drop(1)
+            .onEach { coin ->
+                uiState.update { CoinDetailsUiState.Success(coin, chart ?: emptyList()) }
             }
             .launchIn(viewModelScope)
 

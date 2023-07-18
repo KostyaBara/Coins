@@ -22,9 +22,28 @@ sealed interface CoinsUiState {
 class CoinsListViewModel(private val coinsRepository: CoinsRepository) : ViewModel() {
     val uiState = MutableStateFlow<CoinsUiState>(CoinsUiState.Loading)
 
+//    private val _isRefreshing = MutableStateFlow(false)
+//    val isRefreshing: StateFlow<Boolean>
+//        get() = _isRefreshing.asStateFlow()
+//
+//    private val _item = MutableStateFlow<List<Coin>?>(null)
+//    val item: StateFlow<List<Coin>?>
+//        get() = _item.asStateFlow()
+
     init {
         getCoins()
+//        refresh()
     }
+
+//    fun refresh() {
+//        viewModelScope.launch {
+//           val coinsList = mutableListOf<List<Coin>>()
+//           async(Dispatchers.IO) {
+//               _item.emit(coinsRepository.getCoins())
+//           }
+//            _isRefreshing.emit(false)
+//        }
+//    }
 
     fun getCoins() {
         viewModelScope.launch {

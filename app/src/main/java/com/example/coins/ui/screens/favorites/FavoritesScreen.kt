@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -43,6 +44,15 @@ fun FavoritesScreen(
 
     viewModel.isOnFavoriteScreen = true
 
+//    val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+//
+//    val pullRefreshState = rememberPullRefreshState(
+//        refreshing = refreshing,
+//        onRefresh = { viewModel.refresh() }
+//    )
+//    val coinData: List<Coin>? by viewModel.item.collectAsStateWithLifecycle()
+
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { CoinsTopAppBar(scrollBehavior = scrollBehavior) },
@@ -63,6 +73,17 @@ fun FavoritesScreen(
             is FavoritesUiState.Error -> ErrorFavoritesScreen(modifier = modifier.fillMaxSize())
             is FavoritesUiState.Empty -> EmptyScreen(modifier = Modifier)
         }
+//    Box(
+//        Modifier
+//            .pullRefresh(pullRefreshState)
+//            .verticalScroll(rememberScrollState())
+//    ) {refreshing
+//
+//        PullRefreshIndicator(
+//            refreshing = refreshing,
+//            state = pullRefreshState,
+//            modifier = Modifier.align(Alignment.TopCenter))
+//    }
     }
 }
 

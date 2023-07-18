@@ -49,7 +49,6 @@ import com.example.coins.utils.currentPriceFormat
 import com.example.coins.utils.priceChangeFormat
 import com.example.coins.utils.priceChangePercentageFormat
 
-
 @Composable
 fun CoinDetailsScreen(
     coinId: String?,
@@ -250,7 +249,7 @@ fun PriceChangeInfoBlock(coin: Coin) {
 @Composable
 fun BarChart(
     modifier: Modifier = Modifier,
-    values: List<Float>,
+    values: List<Double>,
     maxHeight: Dp = 200.dp,
 ) {
     assert(values.isNotEmpty()) { "Input values are empty" }
@@ -296,7 +295,7 @@ fun BarChart(
 
 @Composable
 private fun RowScope.Bar(
-    value: Float,
+    value: Double,
     color: Color,
     maxHeight: Dp,
 ) {
