@@ -1,5 +1,6 @@
-//package commas.android.app.core.ui.components.compose.linechart.data
+//package com.example.coins.ui.chart
 //
+//import com.example.coins.ui.chart.ChartData
 //import java.math.BigDecimal
 //
 //val chartPreviewData: ChartData
@@ -30,5 +31,5 @@
 //            BigDecimal(1188.04),
 //            BigDecimal(1165.02),
 //            BigDecimal(1175.04),
-//        ).map { ChartData.Entry(it) }
+//        ).map { ChartData.Entry(it, data1 = entry.data) }
 //    )

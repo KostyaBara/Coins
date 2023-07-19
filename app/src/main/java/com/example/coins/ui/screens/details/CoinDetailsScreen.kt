@@ -1,12 +1,11 @@
 package com.example.coins.ui.screens.details
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,27 +15,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,6 +35,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.coins.R
 import com.example.coins.data.model.Coin
+import com.example.coins.ui.chart.LineChart
 import com.example.coins.ui.screens.list.LoadingScreen
 import com.example.coins.utils.currentPriceFormat
 import com.example.coins.utils.priceChangeFormat
@@ -101,20 +93,20 @@ private fun NavBar(
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(end = 32.dp)
         )
 
-        IconButton(
-            onClick = { onFavorite(!uiState.coin.isFavorite) },
+        val icon = if (uiState.coin.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.heart_icon_outlined
+
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = null,
+            tint = Color.Red,
             modifier = Modifier
-                .size(32.dp)
-        ) {
-            val icon = if (uiState.coin.isFavorite) Icons.Filled.Favorite else Icons.Outlined.Star
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.Red
-            )
-        }
+                .clickable { onFavorite(!uiState.coin.isFavorite) }
+                .align(alignment = Alignment.CenterVertically)
+                .size(36.dp)
+        )
     }
 }
 
@@ -170,7 +162,19 @@ private fun SuccessScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        BarChart(values = uiState.chart)
+        Box(contentAlignment = Alignment.BottomStart) {
+            LineChart(
+                chartData = uiState.chartData,
+                chartLineEnabled = true,
+                chartOnFullVerticalSpace = true,
+//                onValueSelected = onChartValueSelected,
+//                onDragEnd = onChartDragEnd,
+                modifier = Modifier
+                    .size(300.dp)
+                    .fillMaxWidth()
+            )
+        }
+
     }
 }
 
@@ -245,71 +249,6 @@ fun PriceChangeInfoBlock(coin: Coin) {
         }
     }
 }
-
-@Composable
-fun BarChart(
-    modifier: Modifier = Modifier,
-    values: List<Double>,
-    maxHeight: Dp = 200.dp,
-) {
-    assert(values.isNotEmpty()) { "Input values are empty" }
-
-    val borderColor = Color.Gray
-    val density = LocalDensity.current
-    val strokeWidth = with(density) { 1.dp.toPx() }
-
-    Row(
-        modifier = modifier.then(
-            Modifier
-                .fillMaxWidth()
-                .height(maxHeight)
-                .drawBehind {
-                    // draw X-Axis
-                    drawLine(
-                        color = borderColor,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                    // draw Y-Axis
-                    drawLine(
-                        color = borderColor,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-        ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Bottom
-    ) {
-        values.forEach { item ->
-            Bar(
-                value = item,
-                color = Color(86, green = 160, blue = 241),
-                maxHeight = maxHeight
-            )
-        }
-    }
-}
-
-@Composable
-private fun RowScope.Bar(
-    value: Double,
-    color: Color,
-    maxHeight: Dp,
-) {
-    val itemHeight = remember(value) { value * maxHeight.value / 100 }
-
-    Spacer(
-        modifier = Modifier
-            .padding(horizontal = 3.dp)
-            .height(itemHeight.dp)
-            .weight(1f)
-            .background(color)
-    )
-}
-
 
 //@Composable
 //@Preview

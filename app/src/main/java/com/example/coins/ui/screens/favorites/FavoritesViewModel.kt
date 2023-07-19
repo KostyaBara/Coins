@@ -10,10 +10,13 @@ import com.example.coins.CoinsApplication
 import com.example.coins.data.CoinsRepository
 import com.example.coins.data.model.Coin
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 sealed interface FavoritesUiState {
     data class Success(val coins: List<Coin>) : FavoritesUiState
@@ -28,28 +31,26 @@ class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewMod
 
     val isLoading = false
 
-//    private val _isRefreshing = MutableStateFlow(false)
-//    val isRefreshing: StateFlow<Boolean>
-//        get() = _isRefreshing.asStateFlow()
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
 
-//    private val _item = MutableStateFlow<FavoritesUiState>(FavoritesUiState.Loading)
-//    val item: StateFlow<FavoritesUiState>
-//        get() = _item.asStateFlow()
+    private val _item = MutableStateFlow<List<Coin>?>(null)
+    val item: StateFlow<List<Coin>?>
+        get() = _item.asStateFlow()
 
     init {
         observeCoins()
-//        refresh()
+        refresh()
     }
 
-//    fun refresh() {
-//        viewModelScope.launch {
-//            val coinsList = mutableListOf<FavoritesUiState>()
-//            async(Dispatchers.IO) {
-//                _item.emit(coinsRepository.getCoins())
-//            }
-//            _isRefreshing.emit(false)
-//        }
-//    }
+    fun refresh() {
+        viewModelScope.launch {
+            val coinsList = mutableListOf<List<Coin>>()
+                _item.emit(coinsRepository.getCoins())
+            _isRefreshing.emit(false)
+        }
+    }
 
     private fun observeCoins() {
         uiState.update { FavoritesUiState.Loading }

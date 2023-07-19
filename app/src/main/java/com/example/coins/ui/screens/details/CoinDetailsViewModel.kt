@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.coins.CoinsApplication
 import com.example.coins.data.CoinsRepository
 import com.example.coins.data.model.Coin
+import com.example.coins.ui.chart.ChartData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
@@ -19,9 +20,7 @@ import kotlinx.coroutines.launch
 sealed interface CoinDetailsUiState {
     data class Success(
         val coin: Coin = Coin(),
-        val chart: List<Double> = listOf(
-            4.33, 500.0, 5.32, 15.1, 82.6, 12.0, 55.0, 100.0, 60.0, 26.0, 13.0, 34.0, 55.0, 139.0, 35.0, 79.0
-        )
+        val chartData: ChartData,
     ) : CoinDetailsUiState
 
     object Error : CoinDetailsUiState
@@ -34,8 +33,8 @@ class CoinDetailsViewModel(
 ) : ViewModel() {
     val uiState = MutableStateFlow<CoinDetailsUiState>(CoinDetailsUiState.Loading)
 
-    private val chart
-        get() = (uiState.value as? CoinDetailsUiState.Success)?.chart
+    val chart
+        get() = (uiState.value as? CoinDetailsUiState.Success)?.chartData
 
     init {
         getCoinDetails()
@@ -55,9 +54,12 @@ class CoinDetailsViewModel(
                 val coin = coinsRepository.getCoin(coinId!!)!!
 //                Log.d("abcd", "loading chart")
                 val chart = coinsRepository.getCoinChart(coinId).prices.map { it.value }
-//                Log.d("abcd", chart.toString())
+                Log.d("abcd", "loading ChartData")
+                val chartData =
+                    ChartData(coinsRepository.getCoinChart(coinId).prices.map { ChartData.Entry(
+                        it.value.toBigDecimal()) })
                 CoinDetailsUiState.Success(
-                    coin, chart
+                    coin, chartData
                 )
             } catch (e: Throwable) {
                 Log.e("abcd", "error", e)
@@ -71,7 +73,7 @@ class CoinDetailsViewModel(
         coinsRepository.observeCoin(coinId!!)
             .drop(1)
             .onEach { coin ->
-                uiState.update { CoinDetailsUiState.Success(coin, chart ?: emptyList()) }
+                uiState.update { CoinDetailsUiState.Success(coin, chart ?: ChartData()) }
             }
             .launchIn(viewModelScope)
 
