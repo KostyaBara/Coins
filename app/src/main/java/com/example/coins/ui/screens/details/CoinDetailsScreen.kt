@@ -125,14 +125,7 @@ private fun ErrorScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Composable
-private fun LoadingScreen(modifier: Modifier = Modifier) {
-    Image(
-        modifier = modifier.size(200.dp),
-        painter = painterResource(R.drawable.loading_img),
-        contentDescription = stringResource(R.string.loading)
-    )
-}
+
 
 @Composable
 private fun SuccessScreen(
@@ -176,6 +169,15 @@ private fun SuccessScreen(
         }
 
     }
+}
+
+@Composable
+private fun LoadingScreen(modifier: Modifier = Modifier) {
+    Image(
+        modifier = modifier.size(200.dp),
+        painter = painterResource(R.drawable.loading_img),
+        contentDescription = stringResource(R.string.loading)
+    )
 }
 
 @Composable

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import com.example.coins.data.model.Coin
 import com.example.coins.ui.screens.favorites.FavoritesScreen
 import com.example.coins.ui.screens.favorites.FavoritesViewModel
 import com.example.coins.ui.screens.list.CoinsListScreen
+import com.example.coins.ui.screens.settings.SettingsScreen
 
 @Composable
 fun HomeScreen(
@@ -32,7 +34,7 @@ fun HomeScreen(
 ) {
     var tabIndex = remember { mutableStateOf(0) }
 
-    val tabs = listOf("List", "Favorites")
+    val tabs = listOf("List", "Favorites", "Settings")
 
     if (viewModel.isOnFavoriteScreen) {
         viewModel.isOnFavoriteScreen = false
@@ -54,6 +56,12 @@ fun HomeScreen(
                         .fillMaxWidth()
                         .weight(1f),
                 )
+            2 ->
+                SettingsScreen(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                )
         }
         Divider()
         TabRow(
@@ -71,6 +79,7 @@ fun HomeScreen(
                         when (index) {
                             0 -> Icon(imageVector = Icons.Default.Home, contentDescription = null)
                             1 -> Icon(imageVector = Icons.Default.Star, contentDescription = null)
+                            2 -> Icon(imageVector = Icons.Default.Settings, contentDescription = null)
                         }
                     }
                 )
