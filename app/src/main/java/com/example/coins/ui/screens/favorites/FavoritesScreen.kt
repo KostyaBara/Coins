@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,7 +71,6 @@ fun FavoritesScreen(
                     SuccessFavoritesScreen(
                         coins = uiState.coins,
                         onItemClick = onItemClick,
-                        pullRefreshState = pullRefreshState,
                         modifier = modifier
                             .fillMaxSize()
                             .padding(paddingValues)
@@ -94,11 +92,9 @@ fun FavoritesScreen(
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun SuccessFavoritesScreen(
     coins: List<Coin>,
-    pullRefreshState: PullRefreshState,
     onItemClick: (Coin) -> Unit,
     modifier: Modifier = Modifier,
 ) {

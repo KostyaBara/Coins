@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.coins.data.model.Coin
+import com.example.coins.data.model.DataSource
 import com.example.coins.ui.screens.favorites.FavoritesScreen
 import com.example.coins.ui.screens.favorites.FavoritesViewModel
 import com.example.coins.ui.screens.list.CoinsListScreen
@@ -58,6 +59,7 @@ fun HomeScreen(
                 )
             2 ->
                 SettingsScreen(
+                    modeChangeOptions = DataSource.modeChangeButtons,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
