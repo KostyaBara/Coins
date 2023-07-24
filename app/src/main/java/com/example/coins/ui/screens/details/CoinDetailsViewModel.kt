@@ -50,9 +50,9 @@ class CoinDetailsViewModel(
         viewModelScope.launch {
             uiState.update { CoinDetailsUiState.Loading }
             val newState = try {
-//                Log.d("abcd", "loading coin")
+                Log.d("abcd", "loading coin")
                 val coin = coinsRepository.getCoin(coinId!!)!!
-//                Log.d("abcd", "loading chart")
+                Log.d("abcd", "loading chart")
                 val chart = coinsRepository.getCoinChart(coinId).prices.map { it.value }
                 Log.d("abcd", "loading ChartData")
                 val chartData =

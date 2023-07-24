@@ -31,7 +31,7 @@ import com.example.coins.ui.screens.settings.SettingsScreen
 @Composable
 fun HomeScreen(
     onItemClick: (Coin) -> Unit,
-    viewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.Factory)
+    viewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.Factory),
 ) {
     var tabIndex = remember { mutableStateOf(0) }
 

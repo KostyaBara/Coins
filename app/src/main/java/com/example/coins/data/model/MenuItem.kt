@@ -9,6 +9,7 @@ sealed class MenuItem(
     data class ButtonItem(
         override val name: String,
         override val color: Color,
+        val label: String,
     ) : MenuItem(name, color)
 
 }

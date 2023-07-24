@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,8 +37,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.coins.R
 import com.example.coins.data.model.Coin
+import com.example.coins.ui.chart.ChartData
 import com.example.coins.ui.chart.LineChart
 import com.example.coins.ui.screens.list.LoadingScreen
+import com.example.coins.ui.theme.CoinsTheme
 import com.example.coins.utils.currentPriceFormat
 import com.example.coins.utils.priceChangeFormat
 import com.example.coins.utils.priceChangePercentageFormat
@@ -67,7 +71,7 @@ fun CoinDetailsScreen(
 @Composable
 private fun NavBar(
     uiState: CoinDetailsUiState.Success,
-    onClick: () -> Unit,
+    onBackClick: () -> Unit,
     onFavorite: (Boolean) -> Unit,
 ) {
 
@@ -82,14 +86,14 @@ private fun NavBar(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .clickable { onClick() }
+                .clickable { onBackClick() }
                 .align(alignment = Alignment.CenterVertically)
         )
 
         Spacer(modifier = Modifier.height(52.dp))
 
         Text(
-            text = "${uiState.coin.name}",
+            text = uiState.coin.name,
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
@@ -130,7 +134,7 @@ private fun ErrorScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun SuccessScreen(
     uiState: CoinDetailsUiState.Success,
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit,
     onFavorite: (Boolean) -> Unit,
 ) {
 
@@ -143,7 +147,7 @@ private fun SuccessScreen(
 
         NavBar(
             uiState = uiState,
-            onClick = onBackClick,
+            onBackClick = onBackClick,
             onFavorite = onFavorite
         )
 
@@ -252,23 +256,26 @@ fun PriceChangeInfoBlock(coin: Coin) {
     }
 }
 
-//@Composable
-//@Preview
-//private fun SuccessScreenPreview() {
-//    CoinsTheme {
-//        Surface(
-//            modifier = Modifier.fillMaxSize(),
-//            color = MaterialTheme.colorScheme.background
-//        ) {
-//            SuccessScreen(
-//                uiState = CoinDetailsUiState.Success(
-//                    coin = Coin(
-//                        name = "Bitcoin",
-//                        image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-//                        currentPrice = 31999.0,
-//                    ),
-//                ),
-//            )
-//        }
-//    }
-//}
+@Composable
+@Preview
+private fun SuccessScreenPreview() {
+    CoinsTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            SuccessScreen(
+                uiState = CoinDetailsUiState.Success(
+                    coin = Coin(
+                        name = "Bitcoin",
+                        image = "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+                        currentPrice = 31999.0,
+                    ),
+                    chartData = ChartData()
+                ),
+                onBackClick = {},
+                onFavorite = {}
+            )
+        }
+    }
+}

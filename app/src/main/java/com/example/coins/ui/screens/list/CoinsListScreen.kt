@@ -73,7 +73,8 @@ fun CoinsListScreen(
 //    ) {
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { CoinsTopAppBar(scrollBehavior = scrollBehavior) },
     ) { paddingValues ->
 

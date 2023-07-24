@@ -18,7 +18,6 @@ fun RootScreen(
     navController: NavHostController = rememberNavController(),
 ) {
 
-
     Scaffold(
     ) { innerPadding ->
 

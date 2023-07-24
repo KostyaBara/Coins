@@ -28,6 +28,7 @@ sealed interface FavoritesUiState {
 class FavoritesViewModel(private val coinsRepository: CoinsRepository) : ViewModel() {
     val uiState = MutableStateFlow<FavoritesUiState>(FavoritesUiState.Loading)
     var isOnFavoriteScreen = false
+    var colorScheme = "Dark mode"
 
     val isLoading = false
 
