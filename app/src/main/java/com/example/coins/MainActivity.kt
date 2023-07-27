@@ -10,23 +10,24 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import com.example.coins.ui.screens.RootScreen
 import com.example.coins.ui.theme.CoinsTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "MainActivity"
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate Called")
         setContent {
             CoinsTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier
                         .fillMaxSize(),
                     color = MaterialTheme.colors.background,
 
                 ) {
-                    RootScreen()
+                     RootScreen()
                 }
             }
         }
