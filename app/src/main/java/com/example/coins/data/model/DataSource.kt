@@ -6,12 +6,12 @@ object DataSource {
 
     val modeChangeButtons = listOf(
         MenuItem.ButtonItem(
-            name = "Light mode",
+            name = "Light theme",
             color = Color(225, 140, 84),
             label = "☀️   "
         ),
         MenuItem.ButtonItem(
-            name = "Dark mode",
+            name = "Dark theme",
             color = Color(56, 51, 37),
             label = "🌘   "
         ),

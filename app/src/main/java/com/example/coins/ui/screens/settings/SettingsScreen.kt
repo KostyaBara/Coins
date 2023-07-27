@@ -1,8 +1,5 @@
 package com.example.coins.ui.screens.settings
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,42 +7,51 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.coins.R
+import com.example.coins.data.model.DataSource
 import com.example.coins.data.model.MenuItem
-import com.example.coins.ui.screens.favorites.FavoritesViewModel
 import com.example.coins.ui.theme.CoinsTheme
 
-enum class AppTheme {
-    Light, Dark, System
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(
-    viewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.Factory),
+    viewModel: SettingsViewModel,
+) {
+    CoinsThemeApp(
+        viewModel = viewModel,
+        selectTheme = viewModel::selectTheme,
+        modeChangeOptions = DataSource.modeChangeButtons,
+        modifier = Modifier
+    )
+}
+
+@Composable
+fun CoinsThemeApp(
+    viewModel: SettingsViewModel,
+    selectTheme: (Boolean) -> Unit,
     modeChangeOptions: List<MenuItem.ButtonItem>,
     modifier: Modifier = Modifier,
 ) {
 
-    var selectedItemName by rememberSaveable { mutableStateOf(viewModel.colorScheme) }
+    var selectedItemName by rememberSaveable { mutableStateOf("Dark theme") }
+
+    val uiState = viewModel.uiState.collectAsState().value
+
+    if (!uiState.isDarkTheme) selectedItemName = "Light theme"
+
 
     Column(modifier = modifier) {
 
@@ -53,17 +59,13 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CoinsTheme(
-            darkTheme = when (selectedItemName) {
-                "Light mode" -> true
-                "Dark mode" -> false
-                else -> isSystemInDarkTheme()
-            }
-        ) {
+        CoinsTheme(darkTheme = uiState.isDarkTheme) {
             modeChangeOptions.forEach { item ->
                 val onCLick = {
-                    viewModel.colorScheme = item.name
                     selectedItemName = item.name
+                    if (item.name == "Light theme")
+                        selectTheme(true)
+                    else selectTheme(false)
                 }
 
                 MenuItemRow(
@@ -78,11 +80,11 @@ fun SettingsScreen(
             }
         }
 
-        Image(
-            modifier = modifier.size(20.dp),
-            painter = painterResource(R.drawable.anadi),
-            contentDescription = stringResource(R.string.loading)
-        )
+//        Image(
+//            modifier = modifier.size(20.dp),
+//            painter = painterResource(R.drawable.anadi),
+//            contentDescription = stringResource(R.string.loading)
+//        )
     }
 }
 
@@ -130,23 +132,5 @@ fun MenuItemRow(
             text = item.name,
             color = item.color
         )
-    }
-}
-
-@Composable
-fun LabeledRadioButton(
-    selected: Boolean,
-    onClick: () -> Unit,
-    label: String,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = onClick
-        )
-        Text(label)
     }
 }

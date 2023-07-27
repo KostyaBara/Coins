@@ -33,7 +33,6 @@ interface CoinDao {
     @Query("SELECT * FROM Coins WHERE id == :id")
     fun observeCoin(id: String): Flow<CoinEntity>
 
-
     @Query("UPDATE Coins SET isFavorite = :isFavorite WHERE id == :id")
     suspend fun updateFavorite(id: String, isFavorite: Boolean)
 
