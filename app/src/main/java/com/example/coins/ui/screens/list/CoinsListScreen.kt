@@ -37,7 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.coins.R
@@ -52,7 +52,7 @@ import com.example.coins.utils.priceChangePercentageFormat
 fun CoinsListScreen(
     onItemClick: (Coin) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: CoinsListViewModel = viewModel(factory = CoinsListViewModel.Factory),
+    viewModel: CoinsListViewModel = hiltViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()

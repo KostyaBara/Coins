@@ -3,6 +3,12 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
     id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes true
 }
 
 android {
@@ -58,6 +64,11 @@ dependencies {
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.material3:material3'
+
+    kapt "com.google.dagger:hilt-compiler:2.44"
+    implementation "com.google.dagger:hilt-android:2.44"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
     implementation("androidx.navigation:navigation-compose:2.6.0")
     implementation "androidx.datastore:datastore-preferences:1.0.0"

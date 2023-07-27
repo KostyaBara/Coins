@@ -29,8 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.coins.R
 import com.example.coins.data.model.Coin
 import com.example.coins.ui.helpers.CoinsTopAppBar
@@ -42,12 +42,10 @@ import com.example.coins.ui.screens.list.LoadingScreen
 fun FavoritesScreen(
     onItemClick: (Coin) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.Factory),
+    viewModel: FavoritesViewModel = hiltViewModel(),
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    viewModel.isOnFavoriteScreen = true
 
     val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 

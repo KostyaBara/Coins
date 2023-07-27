@@ -22,13 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.coins.data.model.DataSource
 import com.example.coins.data.model.MenuItem
 import com.example.coins.ui.theme.CoinsTheme
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel,
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     CoinsThemeApp(
         viewModel = viewModel,
