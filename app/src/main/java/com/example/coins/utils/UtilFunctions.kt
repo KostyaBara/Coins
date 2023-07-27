@@ -1,15 +1,22 @@
 package com.example.coins.utils
 
-fun Double.currentPriceFormat(): String {
-    val value = String.format("%.6f", this).toDouble()
-    return ("$value $")
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
+
+val priceFormatter = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH)).apply {
+    maximumFractionDigits = 8
 }
 
-fun Double.priceChangeFormat(): String {
-    val value = String.format("%.6f", this).toDouble()
-    return ("$value $")
+val percentsFormatter = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH)).apply {
+    maximumFractionDigits = 2
 }
-fun Double.priceChangePercentageFormat():String {
-    val priceChangePercentageFormat = String.format("%.2f", this).toDouble()
-    return ("$priceChangePercentageFormat %")
-}
+
+fun Double.currentPriceFormat(): String =
+    priceFormatter.format(this)
+
+fun Double.priceChangeFormat(): String =
+    priceFormatter.format(this)
+
+fun Double.priceChangePercentageFormat(): String =
+    percentsFormatter.format(this)

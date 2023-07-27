@@ -1,7 +1,6 @@
 package com.example.coins.ui.screens.list
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,14 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -28,20 +25,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.coins.R
+import com.example.coins.data.LoadingMode
 import com.example.coins.data.model.Coin
+import com.example.coins.ui.helpers.CoinCard
 import com.example.coins.ui.helpers.CoinsTopAppBar
 import com.example.coins.utils.currentPriceFormat
 import com.example.coins.utils.priceChangeFormat
@@ -54,59 +48,46 @@ fun CoinsListScreen(
     modifier: Modifier = Modifier,
     viewModel: CoinsListViewModel = hiltViewModel(),
 ) {
-    val uiState = viewModel.uiState.collectAsState().value
+    val uiState = viewModel.uiState.collectAsState().value ?: return Box {}
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-//    val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-//
-//    val pullRefreshState = rememberPullRefreshState(
-//        refreshing = refreshing,
-//        onRefresh = { viewModel.refresh() }
-//    )
-//    val coinData: List<Coin>? by viewModel.item.collectAsStateWithLifecycle()
-
-
-//    Box(
-//        Modifier
-//            .pullRefresh(pullRefreshState)
-//            .verticalScroll(rememberScrollState())
-//    ) {
+    val isLoading = uiState is CoinsUiState.Loading
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isLoading,
+        onRefresh = { viewModel.getCoins(loadingMode = LoadingMode.NET) }
+    )
 
     Scaffold(
         modifier = modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .pullRefresh(pullRefreshState),
         topBar = { CoinsTopAppBar(scrollBehavior = scrollBehavior) },
     ) { paddingValues ->
 
-        when (uiState) {
-            is CoinsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-            is CoinsUiState.Success -> CoinsSuccessScreen(
-                uiState.coins,
-                onItemClick = onItemClick,
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            when (uiState) {
+                is CoinsUiState.Loading -> {}
+                is CoinsUiState.Success -> CoinsSuccessScreen(
+                    uiState.coins,
+                    onItemClick = onItemClick,
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
 
                 is CoinsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
             }
+
+            PullRefreshIndicator(
+                refreshing = isLoading,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
-
-//        PullRefreshIndicator(
-//            refreshing = refreshing,
-//            state = pullRefreshState,
-//            modifier = Modifier.align(Alignment.TopCenter)
-//        )
     }
-
-
-@Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
-    Image(
-        modifier = modifier.size(200.dp),
-        painter = painterResource(R.drawable.loading_img),
-        contentDescription = stringResource(R.string.loading)
-    )
 }
 
 @Composable
@@ -132,14 +113,14 @@ fun CoinsSuccessScreen(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        items(
+        itemsIndexed(
             coins,
-            key = { coin -> coin.id }
-        ) { coin ->
+            key = { _,coin -> coin.id }
+        ) { index, coin ->
             CoinCard(
                 coin = coin,
+                isLast = index == coins.lastIndex,
                 onClick = { onItemClick(coin) }
             )
         }
@@ -158,54 +139,6 @@ private fun ErrorScreen(modifier: Modifier = Modifier) {
             contentDescription = ""
         )
         Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
-    }
-}
-
-@Composable
-fun CoinCard(
-    coin: Coin,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(context = LocalContext.current)
-                .data(coin.image)
-                .crossfade(true)
-                .build(),
-            error = painterResource(R.drawable.ic_broken_image),
-            placeholder = painterResource(R.drawable.loading_img),
-            contentDescription = stringResource(R.string.app_name),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(shape = RoundedCornerShape(16.dp))
-        )
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        NamePriceCard(coin)
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        PriceChangeCard(coin)
-
-        IconButton(
-            onClick = { onClick() },
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.PlayArrow,
-                contentDescription = null,
-                tint = Color.Gray
-            )
-        }
     }
 }
 
@@ -235,22 +168,29 @@ fun PriceChangeCard(coin: Coin) {
             text = coin.priceChange.priceChangeFormat(),
             fontSize = 18.sp
         )
-        Row() {
-            Image(
-                painter = if (coin.priceChangePercentage < 0) {
-                    painterResource(R.drawable.red_arrow_down)
-                } else if (coin.priceChangePercentage > 0) {
-                    painterResource(R.drawable.green_arrow_up)
-                } else painterResource(R.drawable.dash),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            when {
+                coin.priceChangePercentage < 0 -> R.drawable.red_arrow_down
+                coin.priceChangePercentage > 0 -> R.drawable.green_arrow_up
+                else -> null
+            }?.let { resId ->
+                Image(
+                    painter = painterResource(resId),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.width(4.dp))
 
             Text(
                 text = coin.priceChangePercentage.priceChangePercentageFormat(),
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                textAlign = TextAlign.End,
+                modifier = Modifier.width(54.dp)
             )
         }
     }

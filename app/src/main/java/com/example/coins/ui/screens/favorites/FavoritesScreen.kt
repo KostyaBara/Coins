@@ -3,12 +3,13 @@ package com.example.coins.ui.screens.favorites
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -19,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,12 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.coins.R
 import com.example.coins.data.model.Coin
+import com.example.coins.ui.helpers.CoinCard
 import com.example.coins.ui.helpers.CoinsTopAppBar
-import com.example.coins.ui.screens.list.CoinCard
-import com.example.coins.ui.screens.list.LoadingScreen
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -47,13 +45,11 @@ fun FavoritesScreen(
     val uiState = viewModel.uiState.collectAsState().value
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-
+    val isLoading = uiState is FavoritesUiState.Loading
     val pullRefreshState = rememberPullRefreshState(
-        refreshing,
+        refreshing = isLoading,
         onRefresh = { viewModel.refresh() }
     )
-    val coinData: List<Coin>? by viewModel.item.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier
@@ -62,10 +58,13 @@ fun FavoritesScreen(
         topBar = { CoinsTopAppBar(scrollBehavior = scrollBehavior) },
     ) { paddingValues ->
 
-        when (uiState) {
-            is FavoritesUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-            is FavoritesUiState.Success -> {
-                if (coinData == null) {} else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            when (uiState) {
+                is FavoritesUiState.Loading -> {}
+                is FavoritesUiState.Success -> {
                     SuccessFavoritesScreen(
                         coins = uiState.coins,
                         onItemClick = onItemClick,
@@ -74,18 +73,17 @@ fun FavoritesScreen(
                             .padding(paddingValues)
                     )
                 }
+
+                is FavoritesUiState.Error -> ErrorFavoritesScreen(modifier = modifier.fillMaxSize())
+                is FavoritesUiState.Empty -> EmptyScreen(modifier = Modifier)
             }
 
-
-            is FavoritesUiState.Error -> ErrorFavoritesScreen(modifier = modifier.fillMaxSize())
-            is FavoritesUiState.Empty -> EmptyScreen(modifier = Modifier)
+            PullRefreshIndicator(
+                refreshing = isLoading,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
-
-        PullRefreshIndicator(
-            refreshing,
-            pullRefreshState,
-            Modifier.padding(start = 168.dp)
-        )
     }
 }
 
@@ -100,14 +98,14 @@ private fun SuccessFavoritesScreen(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        items(
+        itemsIndexed(
             coins,
-            key = { coin -> coin.id }
-        ) { coin ->
+            key = { _,coin -> coin.id }
+        ) { index, coin ->
             CoinCard(
                 coin = coin,
+                isLast = index == coins.lastIndex,
                 onClick = { onItemClick(coin) }
             )
         }

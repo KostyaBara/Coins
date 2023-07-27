@@ -16,7 +16,7 @@ enum class LoadingMode {
 
 interface CoinsRepository {
     suspend fun getCoin(id: String): Coin?
-    suspend fun getCoins(loadingMode: LoadingMode = LoadingMode.NET): List<Coin>
+    suspend fun getCoins(loadingMode: LoadingMode = LoadingMode.CACHE_NET): List<Coin>
     suspend fun getCoinChart(id: String): CoinChart
 
     fun observeCoin(id:String): Flow<Coin>

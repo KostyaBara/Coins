@@ -3,6 +3,7 @@ package com.example.coins.ui.screens.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coins.data.CoinsRepository
+import com.example.coins.data.LoadingMode
 import com.example.coins.data.model.Coin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,37 +21,22 @@ sealed interface CoinsUiState {
 class CoinsListViewModel @Inject constructor(
     private val coinsRepository: CoinsRepository,
 ) : ViewModel() {
-    val uiState = MutableStateFlow<CoinsUiState>(CoinsUiState.Loading)
-
-//    private val _isRefreshing = MutableStateFlow(false)
-//    val isRefreshing: StateFlow<Boolean>
-//        get() = _isRefreshing.asStateFlow()
-//
-//    private val _item = MutableStateFlow<List<Coin>?>(null)
-//    val item: StateFlow<List<Coin>?>
-//        get() = _item.asStateFlow()
+    val uiState = MutableStateFlow<CoinsUiState?>(null)
 
     init {
         getCoins()
-//        refresh()
     }
 
-//    fun refresh() {
-//        viewModelScope.launch {
-//           val coinsList = mutableListOf<List<Coin>>()
-//           async(Dispatchers.IO) {
-//               _item.emit(coinsRepository.getCoins())
-//           }
-//            _isRefreshing.emit(false)
-//        }
-//    }
+    fun getCoins(loadingMode: LoadingMode = LoadingMode.CACHE_NET) {
+        if (uiState.value is CoinsUiState.Loading){
+            return
+        }
 
-    fun getCoins() {
         viewModelScope.launch {
             uiState.update { CoinsUiState.Loading }
             val newState = try {
                 CoinsUiState.Success(
-                    coinsRepository.getCoins()
+                    coinsRepository.getCoins(loadingMode)
                 )
             } catch (e: Throwable) {
                 CoinsUiState.Error

@@ -81,17 +81,11 @@ fun CoinsThemeApp(
             }
         }
 
-//        Image(
-//            modifier = modifier.size(20.dp),
-//            painter = painterResource(R.drawable.anadi),
-//            contentDescription = stringResource(R.string.loading)
-//        )
     }
 }
 
 @Composable
-private fun NavBar(
-) {
+private fun NavBar() {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,

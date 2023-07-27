@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -43,7 +44,6 @@ import com.example.coins.R
 import com.example.coins.data.model.Coin
 import com.example.coins.ui.chart.ChartData
 import com.example.coins.ui.chart.LineChart
-import com.example.coins.ui.screens.list.LoadingScreen
 import com.example.coins.ui.theme.CoinsTheme
 import com.example.coins.utils.currentPriceFormat
 import com.example.coins.utils.priceChangeFormat
@@ -118,7 +118,8 @@ private fun NavBar(
             modifier = Modifier.padding(end = 32.dp)
         )
 
-        val icon = if (uiState.coin.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.heart_icon_outlined
+        val icon =
+            if (uiState.coin.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.heart_icon_outlined
 
         Icon(
             painter = painterResource(id = icon),
@@ -148,7 +149,6 @@ private fun ErrorScreen(modifier: Modifier = Modifier) {
 }
 
 
-
 @Composable
 private fun SuccessScreen(
     uiState: CoinDetailsUiState.Success,
@@ -175,21 +175,20 @@ private fun SuccessScreen(
 
         PriceChangeInfoBlock(coin = uiState.coin)
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(36.dp))
 
-        Box(contentAlignment = Alignment.BottomStart) {
-            LineChart(
-                chartData = uiState.chartData,
-                chartLineEnabled = true,
-                chartOnFullVerticalSpace = true,
+        LineChart(
+            chartData = uiState.chartData,
+            chartLineEnabled = true,
+
+            chartOnFullVerticalSpace = true,
 //                onValueSelected = onChartValueSelected,
 //                onDragEnd = onChartDragEnd,
-                modifier = Modifier
-                    .size(300.dp)
-                    .fillMaxWidth()
-            )
-        }
-
+            modifier = Modifier
+                .height(300.dp)
+                .fillMaxWidth()
+        )
+        Divider()
     }
 }
 
@@ -232,7 +231,7 @@ private fun CoinInfoBlock(
             contentDescription = stringResource(R.string.app_name),
 //                contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(60.dp, 60.dp)
+                .size(60.dp)
                 .padding(end = 20.dp)
         )
     }
@@ -247,28 +246,32 @@ fun PriceChangeInfoBlock(coin: Coin) {
     ) {
         Text(
             text = coin.priceChange.priceChangeFormat(),
-            fontSize = 14.sp,
+            fontSize = 24.sp,
             modifier = Modifier.padding(start = 12.dp)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Row() {
-            Image(
-                painter = if (coin.priceChangePercentage < 0) {
-                    painterResource(R.drawable.red_arrow_down)
-                } else if (coin.priceChangePercentage > 0) {
-                    painterResource(R.drawable.green_arrow_up)
-                } else painterResource(R.drawable.dash),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            when {
+                coin.priceChangePercentage < 0 -> R.drawable.red_arrow_down
+                coin.priceChangePercentage > 0 -> R.drawable.green_arrow_up
+                else -> null
+            }?.let { resId ->
+                Image(
+                    painter = painterResource(resId),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
 
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Text(
                 text = coin.priceChangePercentage.priceChangePercentageFormat(),
-                fontSize = 15.sp
+                fontSize = 24.sp
             )
         }
     }

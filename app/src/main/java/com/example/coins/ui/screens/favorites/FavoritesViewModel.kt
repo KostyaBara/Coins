@@ -3,11 +3,10 @@ package com.example.coins.ui.screens.favorites
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coins.data.CoinsRepository
+import com.example.coins.data.LoadingMode
 import com.example.coins.data.model.Coin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -28,24 +27,13 @@ class FavoritesViewModel @Inject constructor(
 ) : ViewModel() {
     val uiState = MutableStateFlow<FavoritesUiState>(FavoritesUiState.Loading)
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing: StateFlow<Boolean>
-        get() = _isRefreshing.asStateFlow()
-
-    private val _item = MutableStateFlow<List<Coin>?>(null)
-    val item: StateFlow<List<Coin>?>
-        get() = _item.asStateFlow()
-
     init {
         observeCoins()
-        refresh()
     }
 
     fun refresh() {
         viewModelScope.launch {
-            val coinsList = mutableListOf<List<Coin>>()
-                _item.emit(coinsRepository.getCoins())
-            _isRefreshing.emit(false)
+            coinsRepository.getCoins(loadingMode = LoadingMode.NET)
         }
     }
 
