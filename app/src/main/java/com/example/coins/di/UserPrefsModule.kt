@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.coins.data.UserPreferencesRepository
+import com.example.coins.data.UserPrefs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +23,7 @@ class UserPrefsModule {
     @Provides
     @Singleton
     fun provideUserPrefsRepo(dataStore: DataStore<Preferences>) =
-        UserPreferencesRepository(dataStore)
+        UserPrefs(dataStore)
 
     @Provides
     fun provideDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> =

@@ -2,7 +2,8 @@ package com.example.coins.ui.screens.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.coins.data.UserPreferencesRepository
+import com.example.coins.data.UserPrefs
+import com.example.coins.data.model.ThemeType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,10 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository,
+    private val userPrefs: UserPrefs,
 ) : ViewModel() {
     var uiState: StateFlow<SettingsUiState> =
-        userPreferencesRepository.isDarkTheme.map { isDarkTheme ->
+        userPrefs.isDarkTheme.map { isDarkTheme ->
             SettingsUiState(isDarkTheme)
         }
             .stateIn(
@@ -25,9 +26,9 @@ class SettingsViewModel @Inject constructor(
                 initialValue = SettingsUiState()
             )
 
-    fun selectTheme(isDarkTheme: Boolean) {
+    fun selectTheme(themeType: ThemeType) {
         viewModelScope.launch {
-            userPreferencesRepository.saveThemePreference(isDarkTheme)
+            userPrefs.setDarkTheme(isDarkTheme = themeType == ThemeType.DARK)
         }
     }
 }

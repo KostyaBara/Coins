@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
-class UserPreferencesRepository(
+class UserPrefs(
     private val dataStore: DataStore<Preferences>,
 ) {
 
@@ -30,10 +30,10 @@ class UserPreferencesRepository(
             }
         }
         .map { preferences ->
-            preferences[IS_DARK_THEME] ?: true
+            preferences[IS_DARK_THEME] ?: false
         }
 
-    suspend fun saveThemePreference(isDarkTheme: Boolean) {
+    suspend fun setDarkTheme(isDarkTheme: Boolean) {
         dataStore.edit { preferences ->
             preferences[IS_DARK_THEME] = isDarkTheme
         }

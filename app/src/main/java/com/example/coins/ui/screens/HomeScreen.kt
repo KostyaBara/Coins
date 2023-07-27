@@ -49,7 +49,11 @@ fun HomeScreen(
                         .weight(1f),
                 )
             2 ->
-                SettingsScreen()
+                SettingsScreen(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                )
         }
         Divider()
         TabRow(
