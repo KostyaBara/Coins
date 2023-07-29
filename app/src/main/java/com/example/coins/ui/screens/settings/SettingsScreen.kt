@@ -1,5 +1,6 @@
 package com.example.coins.ui.screens.settings
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +25,7 @@ import com.example.coins.data.model.ThemeType
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
-    modifier: Modifier= Modifier,
+    modifier: Modifier = Modifier,
 ) {
     val uiState = viewModel.uiState.collectAsState().value
 
@@ -32,20 +33,32 @@ fun SettingsScreen(
         modifier = modifier
     ) {
 
+        val systemMode = isSystemInDarkTheme()
+
         NavBar()
 
         Spacer(modifier = Modifier.height(8.dp))
 
         MenuItemRow(
             themeType = ThemeType.LIGHT,
-            isSelected = !uiState.isDarkTheme,
-            onClick = { viewModel.selectTheme(ThemeType.LIGHT) },
+            isSelected = (uiState.isButtonSelected == 0),
+            onClick = { viewModel.selectTheme(ThemeType.LIGHT, systemMode = systemMode) },
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         MenuItemRow(
             themeType = ThemeType.DARK,
-            isSelected = uiState.isDarkTheme,
-            onClick = { viewModel.selectTheme(ThemeType.DARK) },
+            isSelected = (uiState.isButtonSelected == 1),
+            onClick = { viewModel.selectTheme(ThemeType.DARK, systemMode = systemMode) },
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        MenuItemRow(
+            themeType = ThemeType.SYSTEM,
+            isSelected = (uiState.isButtonSelected == 2),
+            onClick = { viewModel.selectTheme(ThemeType.SYSTEM, systemMode = systemMode) },
         )
     }
 }

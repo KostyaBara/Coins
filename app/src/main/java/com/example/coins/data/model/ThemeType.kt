@@ -7,15 +7,15 @@ enum class ThemeType(
     val color: Color,
 ) {
     LIGHT(
-        title = "☀️   Light theme",
+        title = "☀️   Light mode",
         color = Color(225, 140, 84),
     ),
     DARK(
-        title = "\uD83C\uDF18   Dark theme",
+        title = "\uD83C\uDF18   Dark mode",
         color = Color(56, 51, 37),
-    )
-//    SYSTEM(
-//        title = "\uD83E\uDD16 System theme",
-//        color = Color(214, 54, 25),
-//    ),
+    ),
+    SYSTEM(
+        title = "\uD83E\uDD16 System mode",
+        color = Color(214, 54, 25),
+    ),
 }

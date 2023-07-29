@@ -16,9 +16,10 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val userPrefs: UserPrefs,
 ) : ViewModel() {
+
     var uiState: StateFlow<SettingsUiState> =
-        userPrefs.isDarkTheme.map { isDarkTheme ->
-            SettingsUiState(isDarkTheme)
+        userPrefs.isButtonSelected.map { isButtonSelected ->
+            SettingsUiState(isButtonSelected)
         }
             .stateIn(
                 scope = viewModelScope,
@@ -26,14 +27,27 @@ class SettingsViewModel @Inject constructor(
                 initialValue = SettingsUiState()
             )
 
-    fun selectTheme(themeType: ThemeType) {
+    fun selectTheme(themeType: ThemeType, systemMode: Boolean) {
         viewModelScope.launch {
-            userPrefs.setDarkTheme(isDarkTheme = themeType == ThemeType.DARK)
+            when (themeType) {
+                ThemeType.LIGHT -> {
+                    userPrefs.setDarkTheme(isDarkTheme = 0, systemMode = systemMode)
+                }
+
+                ThemeType.DARK -> {
+                    userPrefs.setDarkTheme(isDarkTheme = 1, systemMode = systemMode)
+                }
+
+                ThemeType.SYSTEM -> {
+                    userPrefs.setDarkTheme(isDarkTheme = 2, systemMode = systemMode)
+                }
+            }
         }
     }
-}
 
-data class SettingsUiState(
-    var isDarkTheme: Boolean = true
-)
+    data class SettingsUiState(
+        var isButtonSelected: Int = 3,
+    )
+
+}
 
