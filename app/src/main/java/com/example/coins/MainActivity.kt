@@ -10,6 +10,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.example.coins.data.UserPrefs
+import com.example.coins.data.model.ThemeType
 import com.example.coins.ui.screens.RootScreen
 import com.example.coins.ui.theme.CoinsTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,10 +28,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate Called")
         setContent {
-            val isDarkTheme = userPrefs.isDarkTheme.collectAsState(initial = false)
+            val themeType = userPrefs.themeType.collectAsState(initial = ThemeType.LIGHT)
 
             CoinsTheme(
-                darkTheme = isDarkTheme.value
+                themeType = themeType.value
             ) {
                 Surface(
                     modifier = Modifier

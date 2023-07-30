@@ -18,8 +18,8 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     var uiState: StateFlow<SettingsUiState> =
-        userPrefs.isButtonSelected.map { isButtonSelected ->
-            SettingsUiState(isButtonSelected)
+        userPrefs.themeType.map { themeType ->
+            SettingsUiState(themeType)
         }
             .stateIn(
                 scope = viewModelScope,
@@ -27,26 +27,14 @@ class SettingsViewModel @Inject constructor(
                 initialValue = SettingsUiState()
             )
 
-    fun selectTheme(themeType: ThemeType, systemMode: Boolean) {
+    fun selectTheme(themeType: ThemeType) {
         viewModelScope.launch {
-            when (themeType) {
-                ThemeType.LIGHT -> {
-                    userPrefs.setDarkTheme(isDarkTheme = 0, systemMode = systemMode)
-                }
-
-                ThemeType.DARK -> {
-                    userPrefs.setDarkTheme(isDarkTheme = 1, systemMode = systemMode)
-                }
-
-                ThemeType.SYSTEM -> {
-                    userPrefs.setDarkTheme(isDarkTheme = 2, systemMode = systemMode)
-                }
-            }
+            userPrefs.setThemeType(themeType)
         }
     }
 
     data class SettingsUiState(
-        var isButtonSelected: Int = 3,
+        var themeType: ThemeType = ThemeType.LIGHT,
     )
 
 }
